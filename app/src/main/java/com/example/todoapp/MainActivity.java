@@ -86,22 +86,23 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(resultCode==RESULT_OK && requestCode == EDIT_TEXT_CODE){
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == EDIT_TEXT_CODE) {
             //Retreive the update text value
             String itemText = data.getStringExtra(KEY_ITEM_TEXT);
             //extra the original position of the edited item from the position key
             int position = data.getExtras().getInt(KEY_ITEM_POSITION);
 
             // update the modal at the right position with new item text
-            items.set(position,itemText);
+            items.set(position, itemText);
             // notify the adapter
             itemsAdapter.notifyItemChanged(position);
 
             // persist the changes
             saveItems();
-            Toast.makeText(getApplicationContext(),"Item update successfully!",Toast.LENGTH_SHORT).show();
-        }else {
-            Log.w("MainActivity","Unknow call to onActivityResult");
+            Toast.makeText(getApplicationContext(), "Item update successfully!", Toast.LENGTH_SHORT).show();
+        } else {
+            Log.w("MainActivity", "Unknow call to onActivityResult");
         }
     }
 
