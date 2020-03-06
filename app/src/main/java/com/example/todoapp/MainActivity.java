@@ -1,5 +1,6 @@
 package com.example.todoapp;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,8 +26,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     public static final String KEY_ITEM_TEXT = "item_text";
     public static final String KEY_ITEM_POSITION = "item_position";
-    public static final int EDIT_TEXT_MODE = 20;
-   ArrayList items;
+    public static final int EDIT_TEXT_CODE = 20;
+   List <String> items;
    Button btnAdd;
    EditText etItem;
    RecyclerView rvItems;
@@ -56,9 +57,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClicked(int position) {
                 Intent i = new Intent(MainActivity.this,EditActivity.class);
-                i.putExtra(KEY_ITEM_TEXT, items.get(position).toString());
+                i.putExtra(KEY_ITEM_TEXT, items.get(position));
                 i.putExtra(KEY_ITEM_POSITION,position);
-                startActivityForResult(i,EDIT_TEXT_MODE);
+                startActivityForResult(i,EDIT_TEXT_CODE);
             }
         };
         itemsAdapter = new ItemsAdapter(items, onLongClickListener, onClickListener);
@@ -79,6 +80,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    // handle the result of the edit activity
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(resultCode==RESULT_OK && requestCode == EDIT_TEXT_CODE){
+            //Retreive the update text value
+            String itemText = data.getStringExtra(KEY_ITEM_TEXT);
+            //extra the original position of the edited item from the position key
+            int position = data.getExtras().getInt(KEY_ITEM_POSITION);
+
+            // update the modal at the right position with new item text
+            items.set(position,itemText);
+            // notify the adapter
+            itemsAdapter.notifyItemChanged(position);
+
+            // persist the changes
+            saveItems();
+            Toast.makeText(getApplicationContext(),"Item update successfully!",Toast.LENGTH_SHORT).show();
+        }else {
+            Log.w("MainActivity","Unknow call to onActivityResult");
+        }
+    }
+
     private File getDataFile()
     {
         return new File(getFilesDir(),"data.txt");
